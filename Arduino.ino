@@ -74,7 +74,7 @@ void loop() {
       doc["umidità"] = humidity;
       doc["luminosità"] = brightness;
       doc["qualità aria"] = gas;
-      doc["terreno"] = ground;
+      doc["suolo"] = ground;
       serializeJson(doc,Serial);
     }
     messageReady = false;
