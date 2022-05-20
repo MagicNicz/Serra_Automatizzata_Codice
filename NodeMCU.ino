@@ -1,21 +1,25 @@
+//IMPORTAZIONE DELLE LIBRERIE UTILIZZATE
 #include <ESP8266WiFi.h>
 #include <ESP8266WebServer.h>
 #include <ArduinoJson.h>
 #include <LiquidCrystal_I2C.h>
 
+
 ESP8266WebServer server;
-char* ssid = "PosteMobile_0A3393_2.4G";
-char* password = "03124934";
-//char* ssid = "Nicolò'sGalaxyA22";
-//char* password = "12345678";
+
+//INSERIMENTO SSID E PASSWORD DELLA RETE
+char* ssid = "";
+char* password = "";
 
 LiquidCrystal_I2C lcd(0x27, 16, 2);
 
+//INIZIALIZZAZIONE DELLE VARIABILI RELATIVE AI DATI RACCOLTI
 double umidita = 0, temperatura = 0, suolo = 0;
 int luminosita = 0, qualita = 0;
 
 void setup()
 {
+  //INIZIALIZZAZIONE CONNESSIONE
   WiFi.begin(ssid,password);
   Serial.begin(9600);
   while(WiFi.status()!=WL_CONNECTED)
@@ -29,15 +33,13 @@ void setup()
 
   server.on("/",handleIndex);
   server.begin();
-  // initialize LCD
-  lcd.init();
-  // turn on LCD backlight                      
+  
+  //INIZIALIZZAZIONE DISPLAY LCD TRAMITE MODULO I2C
+  lcd.init();                  
   lcd.backlight();
 
   lcd.setCursor(0, 0);
-  // print message
   lcd.print("Indirizzo IP:");
-  // clears the display to print new message
   lcd.setCursor(0,1);
   lcd.print(WiFi.localIP());
   delay(8000);
@@ -46,6 +48,7 @@ void setup()
 
 void loop()
 {
+  //RICEZIONE DATI TRAMITE ARDUINO JSON
   server.handleClient();
   // Send a JSON-formatted request with key "type" and value "request"
   // then parse the JSON-formatted response with keys "gas" and "distance"
@@ -74,7 +77,7 @@ void loop()
   umidita = doc["umidità"];
   luminosita = doc["luminosità"];
   qualita = doc["qualità aria"];
-  suolo = doc["terreno"];
+  suolo = doc["suolo"];
     
   //DISPLAY
 
@@ -104,7 +107,7 @@ void loop()
   delay(2000);
   lcd.clear();
 
-  //QUALITA'
+  //QUALITA' ARIA
   lcd.setCursor(0, 0);
   lcd.print("Qualita' Aria:");
   lcd.setCursor(0,1);
@@ -124,18 +127,13 @@ void loop()
   lcd.clear();
 }
 
+//INVIO DATI SU WEB
 void handleIndex()
 {
-  
-  
-  /** Prepare the data for serving it over HTTP
-  String output = "temperatura: " + String(temperatura) + "\n";
-  output += "umidità: " + String(umidita)+ "\n" + "luminosità: " + String(luminosita)+ "\n" + "qualità aria: " + String(qualita);
-  // Serve the data as plain text, for example
-  **/
   server.send(200,"text/html", SendHTML(temperatura, umidita, luminosita, qualita, suolo));
 }
 
+//SITO WEB IN HTML
 String SendHTML(float temperatura,float umidita, float luminosita, float qualita, float suolo){
   String ptr = "<!DOCTYPE html> <html>\n";
   ptr +="<head><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0, user-scalable=no\">\n";
