@@ -19,6 +19,7 @@ int groundPin = A2;
 
 
 void setup() {
+  //DICHIARAZIONE CONDIZIONE PIN VENTOLA
   pinMode(fanPin, OUTPUT);
   Serial.begin(9600);
 }
