@@ -50,14 +50,11 @@ void loop()
 {
   //RICEZIONE DATI TRAMITE ARDUINO JSON
   server.handleClient();
-  // Send a JSON-formatted request with key "type" and value "request"
-  // then parse the JSON-formatted response with keys "gas" and "distance"
   DynamicJsonDocument doc(1024);
   
-  // Sending the request
+  //INVIO RICHIESTA
   doc["type"] = "request";
   serializeJson(doc,Serial);
-  // Reading the response
   boolean messageReady = false;
   String message = "";
   while(messageReady == false) { // blocking but that's ok
@@ -66,7 +63,7 @@ void loop()
       messageReady = true;
     }
   }
-  // Attempt to deserialize the JSON-formatted message
+  //ERRORE DESERIALIZZAZIONE
   DeserializationError error = deserializeJson(doc,message);
   if(error) {
     Serial.print(F("deserializeJson() failed: "));
